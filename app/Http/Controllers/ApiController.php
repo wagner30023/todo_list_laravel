@@ -16,7 +16,12 @@ class ApiController extends Controller
             'title' => 'required|min:3'
         ];
 
-        $validator = Validator::make($request->all(), $rules);
+        $feedback = [
+            'required' => 'O campo :attribute deve ser preenchido ',
+            'title.min' => 'O campo título deve ter no mínimo 3 caracteres.'
+        ];
+
+        $validator = Validator::make($request->all(), $rules,$feedback);
 
         if ($validator->fails()) {
             $array['error'] = $validator->messages();
@@ -35,8 +40,12 @@ class ApiController extends Controller
     public function readAllTodos()
     {
         $array = ['error' => ''];
-        $array['list'] = Todo::all();
+        // $array['list'] = Todo::all();
 
+        // pagination
+        $todos = Todo::simplePaginate(3);
+        $array['list'] = $todos->items(); // pega a lista real
+        $array['current_page'] = $todos->currentPage();
         return $array;
     }
 
